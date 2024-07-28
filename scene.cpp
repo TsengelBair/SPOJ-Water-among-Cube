@@ -28,9 +28,29 @@ Scene::~Scene() {}
 void Scene::onSolutionBtnClicked()
 {
     Solution solution;
-    int waterTrapped = solution.trapRainWater(matrix);
+    auto result = solution.trapRainWater(matrix);
+    int waterTrapped = result.first;
+    QVector<Solution::Cell> waterCells = result.second;
+
     resultLabel->setText("Количество воды: " + QString::number(waterTrapped));
+
+    // Отображаем ячейки с водой
+    for (const auto& cell : waterCells) {
+        QGraphicsRectItem* rectItem = new QGraphicsRectItem(cell.y * 50, cell.x * 50, 50, 50);
+        rectItem->setBrush(Qt::blue);
+        rectItem->setPen(QPen(Qt::black));
+        scene->addItem(rectItem);
+
+        QGraphicsTextItem* textItem = new QGraphicsTextItem(QString::number(cell.waterLevel));
+        textItem->setDefaultTextColor(Qt::white);
+        textItem->setFont(QFont("Arial", 14));
+        textItem->setPos(cell.y * 50 + 50 / 2 - textItem->boundingRect().width() / 2,
+                         cell.x * 50 + 50 / 2 - textItem->boundingRect().height() / 2);
+
+        scene->addItem(textItem);
+    }
 }
+
 
 void Scene::draw(const QVector<QVector<int>>& matrix)
 {
@@ -61,3 +81,4 @@ void Scene::draw(const QVector<QVector<int>>& matrix)
         }
     }
 }
+
